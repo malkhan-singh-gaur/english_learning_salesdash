@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A new Flutter project.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="english_learning_sales">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>english_learning_sales</title>
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+<div id="loading-indicator">
+  <img src="icons/Icon-512.png" alt="Flutter" class="flutter-logo">
+
+  <h1 class="dashboard-title">HiSir Sales Dashboard</h1>
+
+  <div class="dashing-loader"></div>
+
+  <p class="loading-text">Synchronizing data...</p>
+</div>
+
+<style>
+  #loading-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f8f9fa;
+    /* Light professional background */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .flutter-logo {
+    width: 80px;
+    margin-bottom: 15px;
+  }
+
+  .dashboard-title {
+    color: #2c3e50;
+    font-size: 24px;
+    margin-bottom: 30px;
+    font-weight: 600;
+  }
+
+  /* The "Dashing" Spinner */
+  .dashing-loader {
+    width: 50px;
+    height: 50px;
+    border: 4px solid transparent;
+    border-top: 4px dashed #2196F3;
+    /* Flutter Blue */
+    border-right: 4px dashed #2196F3;
+    border-radius: 50%;
+    animation: dash-spin 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+  }
+
+  .loading-text {
+    margin-top: 20px;
+    color: #7f8c8d;
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+
+  @keyframes dash-spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+</style>
+  <script src="flutter_bootstrap.js" async></script>
+
+  <script>
+    window.addEventListener('load', function (ev) {
+      _flutter.loader.load({
+        serviceWorker: {
+          serviceWorkerVersion: serviceWorkerVersion,
+        },
+        onEntrypointLoaded: function (engineInitializer) {
+          engineInitializer.initializeEngine().then(function (appRunner) {
+
+            // --- THIS IS THE PART YOU ASKED ABOUT ---
+            const loader = document.getElementById("loading-indicator");
+            if (loader) {
+              loader.remove(); // Removes the HTML loader once Flutter is ready
+            }
+            // ----------------------------------------
+
+            appRunner.runApp();
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
