@@ -1,0 +1,17 @@
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/icons/logo.png
+  android_gravity: center
+  ios_content_mode: center
+#  android_scale_type: centerInside
+  fullscreen: false
+
+  android_12:
+    # Use a specific "Icon" version of your logo here if possible
+    image: assets/icons/logo.png
+    color: "#ffffff"
+    # icon_background_color: "#ffffff" # Only use if your logo is transparent
+
+    # IMPORTANT: Adjust the scale for Android 12+
+    # Valid values: 0.0 to 1.0. Lowering this prevents clipping.
+#    image_fraction: 0.5

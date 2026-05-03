@@ -26,28 +26,10 @@ class _SalesmanLoginPageState extends State<SalesmanLoginPage> {
 
     setState(() => _isLoading = true);
     try {
-      // AuthNotifier(
-      //   FirebaseAuth.instance,
-      // ).login(_emailController.text.trim(), _passwordController.text.trim());
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-      // GoRouter or Navigator will handle the move to /dashboard
-      // if (FirebaseAuth.instance.currentUser != null) {
-      //   FirestoreService().createSalesman(
-      //     SalesmanModel(
-      //       uid: FirebaseAuth.instance.currentUser!.uid,
-      //       name: '',
-      //       email: _emailController.text,
-      //       phoneNumber: 0,
-      //       referralCode: 'referralCode',
-      //       isActive: true,
-      //       commissionRate: 10,
-      //       createdAt: DateTime.now(),
-      //     ),
-      //   );
-      // }
     } on FirebaseAuthException catch (e) {
       debugPrint(e.code);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -57,6 +39,23 @@ class _SalesmanLoginPageState extends State<SalesmanLoginPage> {
       if (mounted) setState(() => _isLoading = false);
     }
   }
+
+  // _handleSignUp() async {
+  //   setState(() => _isLoading = true);
+  //   try {
+  //     await DemoDataServices().loginAndPopulateDemoData(
+  //       email: _emailController.text.trim(),
+  //       password: _passwordController.text.trim(),
+  //     );
+  //     print(_emailController.text.trim());
+  //     print(_passwordController.text.trim());
+  //   } on Exception catch (e) {
+  //     print(e);
+  //   } finally {
+  //     print('finally done successfully');
+  //     setState(() => _isLoading = false);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});
@@ -14,16 +13,11 @@ class DashboardPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Inside DashboardPage build method...
-    final allOrders = ref.watch(salesmanOrdersProvider).value ?? [];
+    final allOrders = ref.watch(salesAgentOrdersProvider).value ?? [];
     final now = DateTime.now();
 
-    final salesmanAsync = ref.watch(salesmanDataProvider);
+    final salesmanAsync = ref.watch(salesAgentDataProvider);
     final stats = ref.watch(salesStatsProvider);
-    final currencyFormat = NumberFormat.currency(
-      locale: 'en_IN',
-      symbol: '₹',
-      decimalDigits: 0,
-    );
 
     // Navigation Helper
     void navigateToDetails(String title, DateTime startDate) {
@@ -39,51 +33,69 @@ class DashboardPage extends ConsumerWidget {
       );
     }
 
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: const Text(
-          "HiSir Sales Console",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: false,
-        actions: [
-          IconButton.filledTonal(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) {
-                    return SalesmanProfilePage();
-                  },
+    return salesmanAsync.when(
+      data: (salesman) {
+        if (salesman == null) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("User profile not found."),
+                SizedBox(height: 30),
+                OutlinedButton(
+                  onPressed: () => FirebaseAuth.instance.signOut(),
+                  child: const Text('Login again'),
                 ),
-              );
-            },
-            icon: const Icon(Icons.person),
-            tooltip: "Profile",
-          ),
-          const SizedBox(width: 16),
-        ],
-      ),
-      body: salesmanAsync.when(
-        data: (salesman) {
-          if (salesman == null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("User profile not found."),
-                  SizedBox(height: 30),
-                  OutlinedButton(
-                    onPressed: () => FirebaseAuth.instance.signOut(),
-                    child: const Text('Login again'),
-                  ),
-                ],
-              ),
-            );
-          }
+              ],
+            ),
+          );
+        }
 
-          return SingleChildScrollView(
+        return Scaffold(
+          backgroundColor: Colors.grey[50],
+          appBar: AppBar(
+            title: const Text(
+              "HiSir Sales Console",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            centerTitle: false,
+            actions: [
+              IconButton.filledTonal(
+                onPressed: () {
+                  // Logic to copy referral link
+                  Clipboard.setData(
+                    ClipboardData(
+                      text:
+                          'https://play.google.com/store/apps/details?id=com.digital_era.english_learning&referrer=${salesman.referralCode}',
+                    ),
+                  ).then((v) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Referral Link Copied!')),
+                    );
+                  });
+                },
+                icon: const Icon(Icons.link),
+                tooltip: "Copy Link",
+              ),
+              SizedBox(width: 8),
+              IconButton.filledTonal(
+                onPressed: () async {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) {
+                        return SalesmanProfilePage();
+                      },
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.person),
+                tooltip: "Profile",
+              ),
+              const SizedBox(width: 16),
+            ],
+          ),
+          body: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,7 +108,7 @@ class DashboardPage extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Hello, ${salesman.name} 👋",
+                          "Hello, ${salesman.personalInfo.fullName} 👋",
                           style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -137,6 +149,7 @@ class DashboardPage extends ConsumerWidget {
                 const SizedBox(height: 32),
 
                 // Stats Cards Grid
+                // Stats Cards Grid
                 LayoutBuilder(
                   builder: (context, constraints) {
                     int crossAxisCount = constraints.maxWidth > 1000
@@ -151,9 +164,10 @@ class DashboardPage extends ConsumerWidget {
                       childAspectRatio: 2.5,
                       children: [
                         StatCard(
-                          title: "Today's Revenue",
-                          value: currencyFormat.format(stats['daily']),
-                          icon: Icons.account_balance_wallet_outlined,
+                          title: "Today's Sales",
+                          // Removed currency format, just showing the count
+                          value: "${stats['dailySales'] ?? 0}",
+                          icon: Icons.trending_up,
                           color: Colors.blue,
                           onTap: () => navigateToDetails(
                             "Today's Sales",
@@ -161,30 +175,28 @@ class DashboardPage extends ConsumerWidget {
                           ),
                         ),
                         StatCard(
-                          title: "Weekly Revenue",
-                          value: currencyFormat.format(stats['weekly']),
-                          icon: Icons.bar_chart_rounded,
+                          title: "Monthly Sales (Target: 15)",
+                          value: "${stats['monthlySales'] ?? 0}",
+                          icon: Icons.track_changes,
                           onTap: () => navigateToDetails(
-                            "Weekly Sales",
-                            now.subtract(Duration(days: now.weekday - 1)),
-                          ),
-                          color: Colors.green,
-                        ),
-                        StatCard(
-                          title: "Monthly Revenue",
-                          value: currencyFormat.format(stats['monthly']),
-                          icon: Icons.calendar_month_outlined,
-                          onTap: () => navigateToDetails(
-                            "Weekly Sales",
+                            "Monthly Sales",
                             DateTime(now.year, now.month, 1),
                           ),
                           color: Colors.orange,
+                        ),
+                        StatCard(
+                          title: "Est. Commission",
+                          // Using currentMonthEarnings which is a double, so format() works
+                          value: '${stats['currentMonthEarnings'] ?? 0}',
+                          icon: Icons.account_balance_wallet_outlined,
+                          onTap:
+                              () {}, // Maybe navigate to a payout history page later
+                          color: Colors.green,
                         ),
                       ],
                     );
                   },
                 ),
-
                 const SizedBox(height: 40),
 
                 // Transactions Table
@@ -241,11 +253,11 @@ class DashboardPage extends ConsumerWidget {
                 // ),
               ],
             ),
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text("Error: $err")),
-      ),
+          ),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, stack) => Center(child: Text("Error: $err")),
     );
   }
 }

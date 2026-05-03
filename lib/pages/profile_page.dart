@@ -8,7 +8,7 @@ class SalesmanProfilePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final salesmanAsync = ref.watch(salesmanDataProvider);
+    final salesmanAsync = ref.watch(salesAgentDataProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text("My Profile")),
@@ -30,7 +30,7 @@ class SalesmanProfilePage extends ConsumerWidget {
                       radius: 50,
                       backgroundColor: Colors.blueAccent.withOpacity(0.1),
                       child: Text(
-                        salesman.name[0].toUpperCase(),
+                        salesman.personalInfo.fullName[0].toUpperCase(),
                         style: const TextStyle(
                           fontSize: 40,
                           fontWeight: FontWeight.bold,
@@ -39,14 +39,14 @@ class SalesmanProfilePage extends ConsumerWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      salesman.name,
+                      salesman.personalInfo.fullName,
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
-                      salesman.email,
+                      salesman.personalInfo.email,
                       style: const TextStyle(color: Colors.grey),
                     ),
                     const SizedBox(height: 32),
@@ -69,7 +69,7 @@ class SalesmanProfilePage extends ConsumerWidget {
                           const Divider(height: 1),
                           _ProfileTile(
                             label: "Phone Number",
-                            value: salesman.phoneNumber.toString(),
+                            value: salesman.personalInfo.phone.toString(),
                             icon: Icons.phone_outlined,
                           ),
                           const Divider(height: 1),
@@ -81,9 +81,9 @@ class SalesmanProfilePage extends ConsumerWidget {
                           const Divider(height: 1),
                           _ProfileTile(
                             label: "Account Status",
-                            value: salesman.isActive ? "Active" : "Inactive",
+                            value: salesman.status,
                             icon: Icons.verified_user_outlined,
-                            valueColor: salesman.isActive
+                            valueColor: salesman.status == 'active'
                                 ? Colors.green
                                 : Colors.red,
                           ),

@@ -25,7 +25,7 @@ class SalesmanModel {
 
   factory SalesmanModel.fromJson(Map<String, dynamic> json) {
     return SalesmanModel(
-      uid: json['uid'] as String,
+      uid: json['uid'] ?? json['agentId'],
       name: json['name'] as String,
       email: json['email'] as String,
       phoneNumber: json['phoneNumber'] as int? ?? 0,

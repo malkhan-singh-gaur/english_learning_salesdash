@@ -57,7 +57,7 @@ class AuthWrapper extends ConsumerWidget {
         if (user != null) {
           return Builder(
             builder: (context) {
-              final user = ref.watch(salesmanDataProvider);
+              final user = ref.watch(salesAgentDataProvider);
 
               if (user.isLoading) {
                 return Scaffold(
@@ -76,3 +76,5 @@ class AuthWrapper extends ConsumerWidget {
     );
   }
 }
+
+
