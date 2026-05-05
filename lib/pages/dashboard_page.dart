@@ -1,4 +1,5 @@
 import 'package:english_learning_sales/pages/profile_page.dart';
+import 'package:english_learning_sales/pages/sales_agents/salesman_list_page.dart';
 import 'package:english_learning_sales/provider/user_provider.dart';
 import 'package:english_learning_sales/pages/sales_list_page.dart';
 import 'package:english_learning_sales/widget/sales_stats_card.dart';
@@ -36,17 +37,19 @@ class DashboardPage extends ConsumerWidget {
     return salesmanAsync.when(
       data: (salesman) {
         if (salesman == null) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text("User profile not found."),
-                SizedBox(height: 30),
-                OutlinedButton(
-                  onPressed: () => FirebaseAuth.instance.signOut(),
-                  child: const Text('Login again'),
-                ),
-              ],
+          return Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("User profile not found."),
+                  SizedBox(height: 30),
+                  OutlinedButton(
+                    onPressed: () => FirebaseAuth.instance.signOut(),
+                    child: const Text('Login again'),
+                  ),
+                ],
+              ),
             ),
           );
         }
@@ -60,37 +63,66 @@ class DashboardPage extends ConsumerWidget {
             ),
             centerTitle: false,
             actions: [
-              IconButton.filledTonal(
-                onPressed: () {
-                  // Logic to copy referral link
-                  Clipboard.setData(
-                    ClipboardData(
-                      text:
-                          'https://play.google.com/store/apps/details?id=com.digital_era.english_learning&referrer=${salesman.referralCode}',
-                    ),
-                  ).then((v) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Referral Link Copied!')),
-                    );
-                  });
+              PopupMenuButton<String>(
+                // Use filledTonal style by wrapping the icon in a Container or using the 'icon' property
+                icon: const Icon(Icons.more_vert),
+                tooltip: "More Options",
+                onSelected: (value) async {
+                  switch (value) {
+                    case 'copy':
+                      await Clipboard.setData(
+                        ClipboardData(
+                          text: 'https://play.google.com/store/apps/details?id=com.digital_era.english_learning&referrer=${salesman.referralCode}',
+                        ),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Referral Link Copied!')),
+                      );
+                      break;
+
+                    case 'profile':
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const SalesmanProfilePage()),
+                      );
+                      break;
+
+                    case 'agents':
+                    // Logic for your sales agents' stats or dashboard
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const SalesmenListPage()),
+                      );
+                      break;
+                  }
                 },
-                icon: const Icon(Icons.link),
-                tooltip: "Copy Link",
-              ),
-              SizedBox(width: 8),
-              IconButton.filledTonal(
-                onPressed: () async {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) {
-                        return SalesmanProfilePage();
-                      },
+                itemBuilder: (BuildContext context) => [
+                  const PopupMenuItem(
+                    value: 'copy',
+                    child: ListTile(
+                      leading: Icon(Icons.link),
+                      title: Text('Copy Link'),
+                      contentPadding: EdgeInsets.zero,
                     ),
-                  );
-                },
-                icon: const Icon(Icons.person),
-                tooltip: "Profile",
+                  ),
+                  const PopupMenuItem(
+                    value: 'profile',
+                    child: ListTile(
+                      leading: Icon(Icons.person),
+                      title: Text('View Profile'),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                  if (salesman.role == 'supervisor')
+                  const PopupMenuItem(
+                    value: 'agents',
+                    child: ListTile(
+                      leading: Icon(Icons.analytics), // Relevant icon for agents
+                      title: Text('My Sales Agents'),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(width: 16),
             ],
@@ -190,7 +222,7 @@ class DashboardPage extends ConsumerWidget {
                           value: '${stats['currentMonthEarnings'] ?? 0}',
                           icon: Icons.account_balance_wallet_outlined,
                           onTap:
-                              () {}, // Maybe navigate to a payout history page later
+                              () {},
                           color: Colors.green,
                         ),
                       ],
@@ -198,59 +230,6 @@ class DashboardPage extends ConsumerWidget {
                   },
                 ),
                 const SizedBox(height: 40),
-
-                // Transactions Table
-                // const Text(
-                //   "Recent Sales History",
-                //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                // ),
-                // const SizedBox(height: 16),
-                // Card(
-                //   elevation: 0,
-                //   shape: RoundedRectangleBorder(
-                //     borderRadius: BorderRadius.circular(12),
-                //     side: BorderSide(color: Colors.grey.shade200),
-                //   ),
-                //   child: SizedBox(
-                //     width: double.infinity,
-                //     child: DataTable(
-                //       headingRowColor: MaterialStateProperty.all(
-                //         Colors.grey[50],
-                //       ),
-                //       columns: const [
-                //         DataColumn(label: Text('Date')),
-                //         DataColumn(label: Text('Customer ID')),
-                //         DataColumn(label: Text('Batch')),
-                //         DataColumn(label: Text('Amount')),
-                //       ],
-                //       rows: (stats['recentOrders'] as List).map((order) {
-                //         return DataRow(
-                //           cells: [
-                //             DataCell(
-                //               Text(
-                //                 DateFormat(
-                //                   'dd MMM, yyyy',
-                //                 ).format(order.purchaseDate.toDate()),
-                //               ),
-                //             ),
-                //             DataCell(
-                //               Text(order.userId.substring(0, 8) + "..."),
-                //             ),
-                //             DataCell(Text(order.batchName)),
-                //             DataCell(
-                //               Text(
-                //                 currencyFormat.format(order.amountPaid),
-                //                 style: const TextStyle(
-                //                   fontWeight: FontWeight.bold,
-                //                 ),
-                //               ),
-                //             ),
-                //           ],
-                //         );
-                //       }).toList(),
-                //     ),
-                //   ),
-                // ),
               ],
             ),
           ),

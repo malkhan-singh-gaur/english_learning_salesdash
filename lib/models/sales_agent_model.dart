@@ -4,6 +4,9 @@ class SalesAgent {
   final String agentId;
   final String status; // 'active', 'inactive', 'terminated'
   final String referralCode;
+  final String role; // 'salesman', 'supervisor', 'manager'
+  final String mySupervisor;
+  final String myManager;
   final Timestamp createdAt;
   final PersonalInfo personalInfo;
   final KycAndBankDetails kycAndBankDetails;
@@ -17,6 +20,9 @@ class SalesAgent {
     required this.personalInfo,
     required this.kycAndBankDetails,
     required this.contractTerms,
+    required this.role,
+    required this.mySupervisor,
+    required this.myManager,
   });
 
   factory SalesAgent.fromJson(Map<String, dynamic> json) {
@@ -24,12 +30,17 @@ class SalesAgent {
       agentId: json['agentId'] ?? '',
       status: json['status'] ?? 'inactive',
       referralCode: json['referralCode'] ?? '',
+      role: json['role'] ?? 'salesman',
+      mySupervisor: json['mySupervisor'] ?? '',
+      myManager: json['myManager'] ?? '',
       // Handle Firebase Timestamp or standard ISO 8601 string
       createdAt: json['createdAt'] != null && json['createdAt'] is String
           ? json['createdAt']
           : (json['createdAt'] ?? Timestamp.now()),
       personalInfo: PersonalInfo.fromJson(json['personalInfo'] ?? {}),
-      kycAndBankDetails: KycAndBankDetails.fromJson(json['kycAndBankDetails'] ?? {}),
+      kycAndBankDetails: KycAndBankDetails.fromJson(
+        json['kycAndBankDetails'] ?? {},
+      ),
       contractTerms: ContractTerms.fromJson(json['contractTerms'] ?? {}),
     );
   }
@@ -39,6 +50,9 @@ class SalesAgent {
       'agentId': agentId,
       'status': status,
       'referralCode': referralCode,
+      'role': role,
+      'mySupervisor': mySupervisor,
+      'myManager': myManager,
       'createdAt': createdAt,
       'personalInfo': personalInfo.toJson(),
       'kycAndBankDetails': kycAndBankDetails.toJson(),
