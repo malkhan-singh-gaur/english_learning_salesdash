@@ -30,8 +30,8 @@ class _CreateSalesmanPageState extends State<CreateSalesmanPage> {
   // --- Contract & Sales Controllers ---
   final _referralController = TextEditingController();
   final _monthlyTargetController = TextEditingController(text: '15');
-  final _baseTargetPayoutController = TextEditingController(text: '8000');
-  final _belowTargetPerSaleController = TextEditingController(text: '500');
+  final _baseTargetPayoutController = TextEditingController(text: '7500');
+  final _belowTargetPerSaleController = TextEditingController(text: '400');
   final _bonusPerSaleController = TextEditingController(text: '300');
 
   bool _isLoading = false;
@@ -488,42 +488,42 @@ class _CreateSalesmanPageState extends State<CreateSalesmanPage> {
                       validator: (v) =>
                           v!.isEmpty ? 'Enter a unique referral code' : null,
                     ),
-                    _buildTextField(
-                      context,
-                      "Monthly Target (Sales)",
-                      "e.g. 15",
-                      _monthlyTargetController,
-                      Icons.track_changes_outlined,
-                      keyboardType: TextInputType.number,
-                      validator: (v) => v!.isEmpty ? 'Required' : null,
-                    ),
-                    _buildTextField(
-                      context,
-                      "Base Target Payout (₹)",
-                      "e.g. 8000",
-                      _baseTargetPayoutController,
-                      Icons.currency_rupee_outlined,
-                      keyboardType: TextInputType.number,
-                      validator: (v) => v!.isEmpty ? 'Required' : null,
-                    ),
-                    _buildTextField(
-                      context,
-                      "Below Target Per Sale (₹)",
-                      "e.g. 500",
-                      _belowTargetPerSaleController,
-                      Icons.trending_down_outlined,
-                      keyboardType: TextInputType.number,
-                      validator: (v) => v!.isEmpty ? 'Required' : null,
-                    ),
-                    _buildTextField(
-                      context,
-                      "Bonus Per Sale (₹)",
-                      "e.g. 300",
-                      _bonusPerSaleController,
-                      Icons.trending_up_outlined,
-                      keyboardType: TextInputType.number,
-                      validator: (v) => v!.isEmpty ? 'Required' : null,
-                    ),
+                    // _buildTextField(
+                    //   context,
+                    //   "Monthly Target (Sales)",
+                    //   "e.g. 15",
+                    //   _monthlyTargetController,
+                    //   Icons.track_changes_outlined,
+                    //   keyboardType: TextInputType.number,
+                    //   validator: (v) => v!.isEmpty ? 'Required' : null,
+                    // ),
+                    // _buildTextField(
+                    //   context,
+                    //   "Base Target Payout (₹)",
+                    //   "e.g. 8000",
+                    //   _baseTargetPayoutController,
+                    //   Icons.currency_rupee_outlined,
+                    //   keyboardType: TextInputType.number,
+                    //   validator: (v) => v!.isEmpty ? 'Required' : null,
+                    // ),
+                    // _buildTextField(
+                    //   context,
+                    //   "Below Target Per Sale (₹)",
+                    //   "e.g. 500",
+                    //   _belowTargetPerSaleController,
+                    //   Icons.trending_down_outlined,
+                    //   keyboardType: TextInputType.number,
+                    //   validator: (v) => v!.isEmpty ? 'Required' : null,
+                    // ),
+                    // _buildTextField(
+                    //   context,
+                    //   "Bonus Per Sale (₹)",
+                    //   "e.g. 300",
+                    //   _bonusPerSaleController,
+                    //   Icons.trending_up_outlined,
+                    //   keyboardType: TextInputType.number,
+                    //   validator: (v) => v!.isEmpty ? 'Required' : null,
+                    // ),
                   ],
                 ),
               ),
